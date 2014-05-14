@@ -65,7 +65,7 @@
 	
 	<bean id="defaultNadLoginProtocol" class="io.nadron.handlers.netty.LoginProtocol.DefaultNadProtocol">
 		<property name="eventDecoder" ref="eventDecoder" />
-		<property name="loginHandler" ref="amf3loginHandler" />
+		<property name="loginHandler" ref="loginHandler" />
 		<property name="lengthFieldPrepender" ref="lengthFieldPrepender" />
 	</bean>
 	

@@ -6,5 +6,5 @@
 	<site-control permitted-cross-domain-policies="master-only" />
 	<!--Instead of setting to-ports="*", administrator's can use ranges and 
 		commas -->
-	<allow-access-from domain="*" to-ports="8090" />
+	<allow-access-from domain="*" to-ports="18090" />
 </cross-domain-policy>

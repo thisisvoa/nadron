@@ -6,41 +6,38 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import org.msgpack.MessagePack;
+import org.msgpack.type.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import org.msgpack.MessagePack;
-import org.msgpack.type.Value;
-
 @Sharable
-public class MsgPackDecoder extends MessageToMessageDecoder<ByteBuf> 
-{
+public class MsgPackDecoder extends MessageToMessageDecoder<ByteBuf> {
 
-	private MessagePack msgPack;
+    private static final Logger LOG = LoggerFactory.getLogger(MsgPackDecoder.class);
+    private MessagePack msgPack;
 
-	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf msg,
-			List<Object> out) throws Exception 
-	{
-		int opcode = msg.readUnsignedByte();
-		if (Events.LOG_IN == opcode || Events.RECONNECT == opcode) 
-		{
-			msg.readUnsignedByte();// To read-destroy the protocol version byte.
-		}
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
+        int opcode = msg.readUnsignedByte();
+        if (Events.LOG_IN == opcode || Events.RECONNECT == opcode) {
+            msg.readUnsignedByte();// To read-destroy the protocol version byte.
+        }
 
-		Value source = msgPack.read(NettyUtils.toByteArray(msg, true));
-		out.add(Events.event(source, opcode));
-	}
+        Value source = msgPack.read(NettyUtils.toByteArray(msg, true));
+        LOG.trace("Event class: {}, type: {}", source.getClass(), source.getType());
+        out.add(Events.event(source, opcode));
+    }
 
-	public MessagePack getMsgPack() 
-	{
-		return msgPack;
-	}
+    public MessagePack getMsgPack() {
+        return msgPack;
+    }
 
-	public void setMsgPack(MessagePack msgPack) 
-	{
-		this.msgPack = msgPack;
-	}
+    public void setMsgPack(MessagePack msgPack) {
+        this.msgPack = msgPack;
+    }
 
 
 }

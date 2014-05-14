@@ -7,6 +7,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -16,29 +18,26 @@ import java.util.List;
  * {@link NettyMessageBuffer}. It will also convert
  * {@link Events#NETWORK_MESSAGE} events to {@link Events#SESSION_MESSAGE}
  * event.
- * 
+ *
  * @author Abraham Menacherry
- * 
  */
 //TODO check if MessageToMessageDecoder can be replaced with MessageToByteDecoder
 @Sharable
-public class MessageBufferEventDecoder extends MessageToMessageDecoder<ByteBuf>
-{
+public class MessageBufferEventDecoder extends MessageToMessageDecoder<ByteBuf> {
+    private static final Logger LOG = LoggerFactory.getLogger(MessageBufferEventDecoder.class);
 
-	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf buffer,
-			List<Object> out) throws Exception
-	{
-		out.add(decode(ctx, buffer));
-	}
-	
-	public Event decode(ChannelHandlerContext ctx, ByteBuf in){
-		byte opcode = in.readByte();
-		if (opcode == Events.NETWORK_MESSAGE) 
-		{
-			opcode = Events.SESSION_MESSAGE;
-		}
-		ByteBuf data = in.readBytes(in.readableBytes());
-		return Events.event(new NettyMessageBuffer(data), opcode);
-	}
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer,
+                          List<Object> out) throws Exception {
+        out.add(decode(ctx, buffer));
+    }
+
+    public Event decode(ChannelHandlerContext ctx, ByteBuf in) {
+        byte opcode = in.readByte();
+        if (opcode == Events.NETWORK_MESSAGE) {
+            opcode = Events.SESSION_MESSAGE;
+        }
+        ByteBuf data = in.readBytes(in.readableBytes());
+        return Events.event(new NettyMessageBuffer(data), opcode);
+    }
 }

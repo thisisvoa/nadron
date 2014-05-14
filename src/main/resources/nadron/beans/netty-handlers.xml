@@ -8,7 +8,6 @@
 
 	<import resource="service-beans.xml" />
 
-
 	<!-- Netty and decoders encoders and handlers -->
 	<bean id="stringDecoder" class="io.netty.handler.codec.string.StringDecoder" />
 	<bean id="stringMessageEncoder" class="io.netty.handler.codec.string.StringEncoder" />
@@ -51,13 +50,6 @@
 		<property name="reconnectRegistry" ref="reconnectSessionRegistry" />
 	</bean>
 
-    <bean id="amf3loginHandler" class="io.nadron.handlers.netty.AMF3LoginHandler">
-        <property name="lookupService" ref="lookupService" />
-        <property name="udpSessionRegistry" ref="udpSessionRegistry" />
-        <property name="idGeneratorService" ref="simpleUniqueIdGenerator" />
-        <property name="reconnectRegistry" ref="reconnectSessionRegistry" />
-    </bean>
-
 	<bean id="webSocketLoginHandler" class="io.nadron.handlers.netty.WebSocketLoginHandler">
 		<property name="lookupService" ref="lookupService" />
 		<property name="idGeneratorService" ref="simpleUniqueIdGenerator" />
@@ -89,11 +81,11 @@
 	</bean>
 
 	<bean id="bossThreadFactory" class="io.nadron.concurrent.NamedThreadFactory">
-		<constructor-arg type="String" value="Server-Boss" />
+		<constructor-arg type="java.lang.String" value="Server-Boss" />
 	</bean>
 
 	<bean id="workerThreadFactory" class="io.nadron.concurrent.NamedThreadFactory">
-		<constructor-arg type="String" index="0" value="Server-Worker" />
+		<constructor-arg type="java.lang.String" index="0" value="Server-Worker" />
 	</bean>
 
 	<!-- Netty options for server bootstrap -->

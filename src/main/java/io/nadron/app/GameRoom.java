@@ -1,11 +1,15 @@
 package io.nadron.app;
 
 import io.nadron.app.impl.DefaultPlayer;
+import io.nadron.event.ChatMessageEvent;
 import io.nadron.event.Event;
 import io.nadron.event.NetworkEvent;
+import io.nadron.event.NewUserLoginEvent;
+import io.nadron.event.impl.ChatMessage;
 import io.nadron.protocols.Protocol;
 import io.nadron.service.GameStateManagerService;
 import io.netty.channel.Channel;
+import io.netty.util.internal.ConcurrentSet;
 
 import java.util.Set;
 
@@ -72,6 +76,8 @@ public interface GameRoom
 	 * @return Returns the set of user sessions associated with game room.
 	 */
 	public abstract Set<PlayerSession> getSessions();
+
+    public abstract ConcurrentSet<ChatMessage> getChatMessages();
 
 	/**
 	 * @return Returns the name of the game room
@@ -175,6 +181,9 @@ public interface GameRoom
 	 */
 	public abstract void sendBroadcast(NetworkEvent networkEvent);
 
+    public abstract void sendNewUserBroadcast(NewUserLoginEvent networkEvent);
+
+    public abstract void sendChatMessageBroadcast(ChatMessageEvent chatMessageEvent);
 	/**
 	 * This method will close down the game room. It can be used to disconnect
 	 * all users connected to a game room.

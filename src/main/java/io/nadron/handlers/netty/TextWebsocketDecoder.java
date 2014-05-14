@@ -9,10 +9,11 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * This class will convert an incoming {@link TextWebSocketFrame} to an
@@ -21,77 +22,75 @@ import org.codehaus.jackson.map.ObjectMapper;
  * the decoding to {@link DefaultEvent}. If the incoming event is of type
  * {@link Events#NETWORK_MESSAGE} then it will be converted to
  * {@link Events#SESSION_MESSAGE}.
- * 
+ *
  * @author Abraham Menacherry
- * 
  */
 @Sharable
 public class TextWebsocketDecoder extends
-		MessageToMessageDecoder<TextWebSocketFrame>
-{
+        MessageToMessageDecoder<TextWebSocketFrame> {
+    private static final Logger LOG = LoggerFactory.getLogger(TextWebsocketDecoder.class);
 
-	private ObjectMapper jackson;
+    private ObjectMapper jackson;
 
-	/**
-	 * This will be put into the {@link ChannelHandlerContext} the first time
-	 * attr method is invoked on it. The get is also a set.
-	 */
-	private final AttributeKey<Class<? extends Event>> eventClass = new AttributeKey<Class<? extends Event>>(
-			"eventClass");
+    /**
+     * This will be put into the {@link ChannelHandlerContext} the first time
+     * attr method is invoked on it. The get is also a set.
+     */
+    private final AttributeKey<Class<? extends Event>> eventClass = new AttributeKey<Class<? extends Event>>(
+            "eventClass");
 
-	@Override
-	protected void decode(ChannelHandlerContext ctx, TextWebSocketFrame frame,
-			List<Object> out) throws Exception
-	{
-		// Get the existing class from the context. If not available, then
-		// default to DefaultEvent.class
-		Attribute<Class<? extends Event>> attr = ctx.attr(eventClass);
-		Class<? extends Event> theClass = attr.get();
-		boolean unknownClass = false;
-		if (null == theClass)
-		{
-			unknownClass = true;
-			theClass = DefaultEvent.class;
-		}
-		String json = frame.text();
-		Event event = jackson.readValue(json, theClass);
+    @Override
+    protected void decode(ChannelHandlerContext ctx, TextWebSocketFrame frame, List<Object> out) throws Exception {
+        // Get the existing class from the context. If not available, then
+        // default to DefaultEvent.class
 
-		// If the class is unknown then either check if its the default event or
-		// a different class. Put the right one in the context.
-		if (unknownClass)
-		{
-			String cName = ((DefaultEvent) event).getcName();
-			if (null == cName)
-			{
-				attr.set(DefaultEvent.class);
-			}
-			else
-			{
-				// Get the class from the string and de-serialize again. Since
-				// thats the right class type.
-				@SuppressWarnings("unchecked")
-				Class<? extends Event> newClass = (Class<? extends Event>) Class
-						.forName(cName);
-				event = jackson.readValue(json, newClass);
-				attr.set(newClass);
-			}
-		}
+        Attribute<Class<? extends Event>> attr = ctx.attr(eventClass);
+        Class<? extends Event> theClass = attr.get();
+        if (null != theClass) {
+            LOG.trace("Event class theClass: {}", theClass.getCanonicalName());
+        } else {
+            LOG.trace("theClass is null ");
+        }
 
-		if (event.getType() == Events.NETWORK_MESSAGE)
-		{
-			event.setType(Events.SESSION_MESSAGE);
-		}
-		out.add(event);
-	}
+        boolean unknownClass = false;
+        if (null == theClass) {
+            unknownClass = true;
+            theClass = DefaultEvent.class;
+        }
+        String json = frame.text();
+        LOG.trace("json: {}", json);
+        Event event = jackson.readValue(json, theClass);
 
-	public ObjectMapper getJackson()
-	{
-		return jackson;
-	}
+        // If the class is unknown then either check if its the default event or
+        // a different class. Put the right one in the context.
+        if (unknownClass) {
+            String cName = ((DefaultEvent) event).getcName();
+            LOG.trace("cName: {}", cName);
+            if (null == cName) {
+                attr.set(DefaultEvent.class);
+            } else {
+                // Get the class from the string and de-serialize again. Since
+                // thats the right class type.
+                @SuppressWarnings("unchecked")
+                Class<? extends Event> newClass = (Class<? extends Event>) Class.forName(cName);
+                LOG.trace("newClass: {}", newClass.getCanonicalName());
+                event = jackson.readValue(json, newClass);
+                attr.set(newClass);
+            }
+        }
 
-	public void setJackson(ObjectMapper jackson)
-	{
-		this.jackson = jackson;
-	}
+        if (event.getType() == Events.NETWORK_MESSAGE) {
+            event.setType(Events.SESSION_MESSAGE);
+        }
+        out.add(event);
+    }
+
+    public ObjectMapper getJackson() {
+        return jackson;
+    }
+
+    public void setJackson(ObjectMapper jackson) {
+        this.jackson = jackson;
+    }
 
 }

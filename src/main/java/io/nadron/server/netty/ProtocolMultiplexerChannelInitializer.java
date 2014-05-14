@@ -16,9 +16,9 @@ public class ProtocolMultiplexerChannelInitializer extends
 	private static final int MAX_IDLE_SECONDS = 60;
 	private int bytesForProtocolCheck;
 	private LoginProtocol loginProtocol;
-	
+
 	@Override
-	protected void initChannel(SocketChannel ch) throws Exception 
+	protected void initChannel(SocketChannel ch) throws Exception
 	{
 		// Create a default pipeline implementation.
 		ChannelPipeline pipeline = ch.pipeline();

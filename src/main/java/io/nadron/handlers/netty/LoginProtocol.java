@@ -1,5 +1,8 @@
 package io.nadron.handlers.netty;
 
+import static io.nadron.event.Events.LOG_IN;
+import static io.nadron.event.Events.PROTCOL_VERSION;
+import static io.nadron.event.Events.RECONNECT;
 import io.nadron.event.Events;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -10,10 +13,10 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import static io.nadron.event.Events.*;
 
 
 /**
@@ -76,7 +79,7 @@ public interface LoginProtocol {
          * @param magic1
          * @param magic2
          * @return true if the two incoming bytes match any of the first two
-         *         letter of HTTP headers like GET, POST etc.
+         * letter of HTTP headers like GET, POST etc.
          */
         protected boolean isHttp(int magic1, int magic2) {
             return magic1 == 'G' && magic2 == 'E' || // GET
@@ -109,18 +112,22 @@ public interface LoginProtocol {
      */
     public static class DefaultNadProtocol implements LoginProtocol {
 
+        private static final Logger LOG = LoggerFactory
+                .getLogger(DefaultNadProtocol.class);
         private int frameSize = 1024;
         private EventDecoder eventDecoder;
-        private AMF3LoginHandler loginHandler;
+        private LoginHandler loginHandler;
         private LengthFieldPrepender lengthFieldPrepender;
 
         @Override
-        public boolean applyProtocol(ByteBuf buffer,
-                                     ChannelPipeline pipeline) {
+        public boolean applyProtocol(ByteBuf buffer, ChannelPipeline pipeline) {
             boolean isThisProtocol = false;
+          /*  final int opcode1 = buffer.getUnsignedByte(buffer.readerIndex());
+            final int protocolVersion1 = buffer.getUnsignedByte(buffer.readerIndex() + 1); */
             final int opcode = buffer.getUnsignedByte(buffer.readerIndex() + 2);
-            final int protocolVersion = buffer.getUnsignedByte(buffer
-                    .readerIndex() + 3);
+            final int protocolVersion = buffer.getUnsignedByte(buffer.readerIndex() + 3);
+           /* LOG.debug("opcode1 is: {}, protoVersion1: {}", opcode1, protocolVersion1);
+            LOG.debug("opcode2 is: {}, protoVersion2: {}", opcode, protocolVersion);  */
             if (isNadProtocol(opcode, protocolVersion)) {
                 pipeline.addLast("framer", createLengthBasedFrameDecoder());
                 pipeline.addLast("eventDecoder", eventDecoder);
@@ -155,11 +162,11 @@ public interface LoginProtocol {
             this.eventDecoder = eventDecoder;
         }
 
-        public AMF3LoginHandler getLoginHandler() {
+        public LoginHandler getLoginHandler() {
             return loginHandler;
         }
 
-        public void setLoginHandler(AMF3LoginHandler loginHandler) {
+        public void setLoginHandler(LoginHandler loginHandler) {
             this.loginHandler = loginHandler;
         }
 
@@ -177,8 +184,7 @@ public interface LoginProtocol {
         private List<LoginProtocol> protocols;
 
         @Override
-        public boolean applyProtocol(ByteBuf buffer,
-                                     ChannelPipeline pipeline) {
+        public boolean applyProtocol(ByteBuf buffer, ChannelPipeline pipeline) {
             if (null != protocols) {
                 for (LoginProtocol protocol : protocols) {
                     if (protocol.applyProtocol(buffer, pipeline)) {

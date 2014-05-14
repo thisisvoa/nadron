@@ -83,10 +83,32 @@ public class DefaultSessionEventHandler implements SessionEventHandler {
             case Events.LOG_OUT:
                 onLogout(event);
                 break;
+            case Events.NEW_USER_LOGIN:
+                onNewUserLogin((NewUserLoginEvent) event);
+                break;
+            case Events.CHAT_MESSAGE:
+                onChatMessage((ChatMessageEvent) event);
+                break;
             default:
                 onCustomEvent(event);
                 break;
         }
+    }
+
+    protected void onNewUserLogin(NewUserLoginEvent event) {
+        Session session = getSession();
+        if (!session.isWriteable())
+            return;
+        session.getTcpSender().sendMessage(event);
+        LOG.trace("onNewUserLogin fired!!!");
+    }
+
+    protected void onChatMessage(ChatMessageEvent event) {
+        Session session = getSession();
+        if (!session.isWriteable())
+            return;
+        session.getTcpSender().sendMessage(event);
+        LOG.trace("onChatMessage fired!!!");
     }
 
     protected void onDataIn(Event event) {
@@ -183,14 +205,12 @@ public class DefaultSessionEventHandler implements SessionEventHandler {
         session.setStatus(Session.Status.NOT_CONNECTED);
         session.setWriteable(false);
         session.setUDPEnabled(false);// will be set to true by udpupstream handler on connect event.
-        String reconnectKey = (String) session
-                .getAttribute(NadronConfig.RECONNECT_KEY);
+        String reconnectKey = (String) session.getAttribute(NadronConfig.RECONNECT_KEY);
         SessionRegistryService<String> registry = (SessionRegistryService<String>) session.getAttribute(NadronConfig.RECONNECT_REGISTRY);
         if (null != reconnectKey && null != registry) {
             // If session is already in registry then do not re-register.
             if (null == registry.getSession(reconnectKey)) {
-                registry.putSession(
-                        reconnectKey, getSession());
+                registry.putSession(reconnectKey, getSession());
                 LOG.debug("Received exception/disconnect event in session. "
                         + "Going to put session in reconnection registry");
             }

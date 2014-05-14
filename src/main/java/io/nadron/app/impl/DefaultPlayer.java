@@ -2,6 +2,8 @@ package io.nadron.app.impl;
 
 import io.nadron.app.Player;
 import io.nadron.app.PlayerSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +12,7 @@ import java.util.Set;
 
 public class DefaultPlayer implements Player
 {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPlayer.class);
 	/**
 	 * This variable could be used as a database key.
 	 */
@@ -33,6 +36,7 @@ public class DefaultPlayer implements Player
 	
 	public DefaultPlayer()
 	{
+
 		playerSessions = new HashSet<PlayerSession>();
 	}
 	
@@ -113,12 +117,14 @@ public class DefaultPlayer implements Player
 	@Override
 	public synchronized boolean addSession(PlayerSession session)
 	{
+        LOG.debug("Добавление playerSession в sessions");
 		return playerSessions.add(session);
 	}
 
 	@Override
 	public synchronized boolean removeSession(PlayerSession session)
 	{
+        LOG.debug("Удаление playerSession из sessions");
 		boolean remove = playerSessions.remove(session);
 		if(playerSessions.size() == 0){
 			logout(session);

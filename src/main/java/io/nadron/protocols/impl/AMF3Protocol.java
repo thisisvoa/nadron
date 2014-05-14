@@ -1,7 +1,6 @@
 package io.nadron.protocols.impl;
 
 import io.nadron.app.PlayerSession;
-import io.nadron.handlers.netty.AMF3ServerHandler;
 import io.nadron.handlers.netty.AMF3ToJavaObjectDecoder;
 import io.nadron.handlers.netty.DefaultToServerHandler;
 import io.nadron.handlers.netty.JavaObjectToAMF3Encoder;
@@ -57,7 +56,7 @@ public class AMF3Protocol extends AbstractNettyProtocol
 		// pipeline now.
 		pipeline.addLast("lengthDecoder", createLengthBasedFrameDecoder());
 		pipeline.addLast("amf3ToJavaObjectDecoder", createAMF3ToJavaObjectDecoder());
-		pipeline.addLast("eventHandler", new AMF3ServerHandler(playerSession));
+		pipeline.addLast("eventHandler", new DefaultToServerHandler(playerSession));
 		
 		// Downstream handlers (i.e towards client) are added to pipeline now.
 		// NOTE the last encoder in the pipeline is the first encoder to be called.

@@ -3,9 +3,9 @@
 	<groupId>com.github.menacher</groupId>
 	<artifactId>nadron</artifactId>
 	<packaging>jar</packaging>
-	<version>0.8</version>
+	<version>0.9</version>
 	<name>nadron</name>
-	<url>https://github.com/menacher/java-game-server/tree/netty4/nadron</url>
+	<url>https://github.com/griand/nadron/tree/master</url>
 	<description>Nadron is a high speed socket based java game server written using Netty and Mike Rettig's Jetlang. It is specifically tuned for network based multiplayer games and supports TCP and UDP network protocols.</description>
 
 	<parent>
@@ -23,17 +23,16 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git://github.com/menacher/java-game-server.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/menacher/java-game-server.git</developerConnection>
-		<url>https://github.com/menacher/java-game-server.git</url>
+		<connection>scm:git:git://github.com/griand/nadron.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/griand/nadron.git</developerConnection>
+		<url>https://github.com/griand/nadron.git</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
 		<developer>
-			<id>menacher</id>
-			<name>Abraham Menacherry</name>
-			<email>abrahammenacherry@gmail.com</email>
+			<id>griand</id>
+			<email>gaastech@gmail.com</email>
 		</developer>
 	</developers>
 
@@ -76,25 +75,31 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.2</version>
+			<version>1.7.7</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
+			<version>1.7.7</version>
 		</dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.jetlang</groupId>
 			<artifactId>jetlang</artifactId>
-			<version>0.2.9</version>
+			<version>0.2.12</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.0.10.Final</version>
+			<version>4.0.19.Final</version>
 		</dependency>
 
 		<!-- Blazeds dependency is there for converting java objects to AMF3 format 
@@ -115,13 +120,13 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.12</version>
+			<version>1.9.13</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.msgpack</groupId>
 			<artifactId>msgpack</artifactId>
-			<version>0.6.8</version>
+			<version>0.6.10</version>
 		</dependency>
 		
 	</dependencies>
@@ -209,7 +214,7 @@
 							<goal>perform</goal>
 						</goals>
 						<configuration>
-							<pomFileName>C:/Users/aby/Documents/GitHub/java-game-server/nadron/target/checkout/nadron/pom.xml</pomFileName>
+							<pomFileName>/Users/javau/projects/nadron/pom.xml</pomFileName>
 						</configuration>
 					</execution>
 				</executions>

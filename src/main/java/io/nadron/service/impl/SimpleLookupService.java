@@ -11,53 +11,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 /**
  * The lookup service abstracts away the implementation detail on getting the
  * game objects from the reference key provided by the client. This lookup is
  * now done from a hashmap but can be done from database or any other manner.
- * 
+ *
  * @author Abraham Menacherry
- * 
  */
-public class SimpleLookupService implements LookupService
-{
-	private final Map<String, GameRoom> refKeyGameRoomMap;
 
-	public SimpleLookupService()
-	{
-		refKeyGameRoomMap = new HashMap<String, GameRoom>();
-	}
-	
-	public SimpleLookupService(Map<String, GameRoom> refKeyGameRoomMap)
-	{
-		super();
-		this.refKeyGameRoomMap = refKeyGameRoomMap;
-	}
+public class SimpleLookupService implements LookupService {
+    private final Map<String, GameRoom> refKeyGameRoomMap;
 
-	@Override
-	public Game gameLookup(Object gameContextKey)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public SimpleLookupService() {
+        refKeyGameRoomMap = new HashMap<String, GameRoom>();
+    }
 
-	@Override
-	public GameRoom gameRoomLookup(Object gameContextKey)
-	{
-		return refKeyGameRoomMap.get((String) gameContextKey);
-	}
+    public SimpleLookupService(Map<String, GameRoom> refKeyGameRoomMap) {
+        super();
+        this.refKeyGameRoomMap = refKeyGameRoomMap;
+    }
 
-	@Override
-	public Player playerLookup(Credentials loginDetail)
-	{
-		return new DefaultPlayer();
-	}
+    @Override
+    public Game gameLookup(Object gameContextKey) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Map<String, GameRoom> getRefKeyGameRoomMap()
-	{
-		return refKeyGameRoomMap;
-	}
+    @Override
+    public GameRoom gameRoomLookup(Object gameContextKey) {
+        return refKeyGameRoomMap.get((String) gameContextKey);
+    }
+
+    @Override
+    public Player playerLookup(Credentials loginDetail) {
+        return new DefaultPlayer("5316", "Andrey Grikhno", "gaastech@gmail.com");
+    }
+
+    public Map<String, GameRoom> getRefKeyGameRoomMap() {
+        return refKeyGameRoomMap;
+    }
 
 
 }
